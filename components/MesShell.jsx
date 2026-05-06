@@ -96,6 +96,7 @@ const emptyLineForm = {
 const emptyStopReasonForm = {
   code: "",
   name: "",
+  color: "#ff0000",
   order: "",
   active: false,
 };
@@ -839,6 +840,7 @@ function StopReasonMaintenancePage({
       ...form,
       code,
       name: form.name.trim(),
+      color: form.color || "#cccccc",
       order: String(form.order).trim(),
     };
 
@@ -905,7 +907,7 @@ function StopReasonMaintenancePage({
                   <Icon name="ti-file-description" /> Stop Reason Name
                 </th>
                 <th>
-                  <Icon name="ti-message-circle" /> Reason
+                  <Icon name="ti-palette" /> Color
                 </th>
                 <th>
                   <Icon name="ti-sort-ascending" /> Display Order
@@ -949,17 +951,31 @@ function StopReasonMaintenancePage({
                         </span>
                       </td>
                       <td>
-                        {usages.length > 0 ? (
-                          <div className="reason-usage-list">
-                            {usages.map((usage) => (
-                              <span key={usage} className="badge badge-red">
-                                {line.code} / {usage}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="muted-text">—</span>
-                        )}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "24px",
+                              height: "24px",
+                              backgroundColor: row.color || "#cccccc",
+                              borderRadius: "4px",
+                              border: "1px solid var(--border)",
+                            }}
+                          />
+                          <span
+                            style={{
+                              fontFamily: "monospace",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            {row.color || "N/A"}
+                          </span>
+                        </div>
                       </td>
                       <td>{row.order || "—"}</td>
                       <td>
@@ -1050,6 +1066,46 @@ function StopReasonMaintenancePage({
                   placeholder="1"
                   onChange={(e) => setForm({ ...form, order: e.target.value })}
                 />
+              </div>
+              <div className="fg">
+                <label>Color</label>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <input
+                    type="color"
+                    value={form.color || "#CC539A"}
+                    onChange={(e) =>
+                      setForm({ ...form, color: e.target.value })
+                    }
+                    style={{
+                      width: "42px",
+                      height: "42px",
+                      padding: "2px",
+                      border: "1.5px solid var(--border)",
+                      borderRadius: "var(--r-sm)",
+                      cursor: "pointer",
+                      background: "var(--surface)",
+                    }}
+                  />
+                  <input
+                    type="text"
+                    value={form.color || ""}
+                    placeholder="#CC539A"
+                    onChange={(e) =>
+                      setForm({ ...form, color: e.target.value })
+                    }
+                    style={{
+                      flex: 1,
+                      fontFamily: "monospace",
+                      fontSize: "15px",
+                      textTransform: "uppercase",
+                      padding: "8px 12px",
+                      border: "1.5px solid var(--border)",
+                      borderRadius: "var(--r-sm)",
+                      outline: "none",
+                      background: "var(--surface)",
+                    }}
+                  />
+                </div>
               </div>
               <div className="fg">
                 <label>Active Status</label>
@@ -1177,6 +1233,16 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
           </div>
           <div className="stat-sub">{line.displayName}</div>
         </div>
+        <div className="stat-card purple">
+          <div className="stat-icon">
+            <Icon name="ti-calendar-event" />
+          </div>
+          <div className="stat-label">Production Date</div>
+          <div className="stat-value" style={{ fontSize: 17 }}>
+            {line.productionDate}
+          </div>
+          <div className="stat-sub">Morning shift</div>
+        </div>
         <div className="stat-card warn">
           <div className="stat-icon">
             <Icon name="ti-barcode" />
@@ -1208,16 +1274,6 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
           <div className="stat-sub" style={{ marginTop: 6 }}>
             {progress}% complete
           </div>
-        </div>
-        <div className="stat-card purple">
-          <div className="stat-icon">
-            <Icon name="ti-calendar-event" />
-          </div>
-          <div className="stat-label">Production Date</div>
-          <div className="stat-value" style={{ fontSize: 17 }}>
-            {line.productionDate}
-          </div>
-          <div className="stat-sub">Morning shift</div>
         </div>
       </div>
 
@@ -1349,7 +1405,7 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
                 </span>
               </div>
 
-              <div className="planning-time-control">
+              {/* <div className="planning-time-control">
                 <div className="fg">
                   <label>
                     <Icon name="ti-clock-hour-4" /> Production Planning Time
@@ -1366,7 +1422,7 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
                   />
                   <span>Hr.</span>
                 </div>
-              </div>
+              </div> */}
 
               <button
                 className="btn btn-primary"
@@ -1389,7 +1445,7 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
   );
 }
 
-function LineStopUpdatePage({ line, stopReasons, stops, setStops }) {
+function LineStopUpdatePage({ line, stopReasons, stops = [], setStops }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [selectedReason, setSelectedReason] = useState("");
 
@@ -1495,7 +1551,7 @@ function LineStopUpdatePage({ line, stopReasons, stops, setStops }) {
             <div className="prog-fill" style={{ width: `${progress}%` }} />
           </div>
         </div>
-        <div className="stat-card">
+        {/* <div className="stat-card">
           <div className="stat-icon">
             <Icon name="ti-player-stop-filled" />
           </div>
@@ -1504,30 +1560,59 @@ function LineStopUpdatePage({ line, stopReasons, stops, setStops }) {
             {activeStopCount}
           </div>
           <div className="stat-sub">of {stops.length} stations</div>
-        </div>
+        </div> */}
       </div>
 
       <div className="stop-grid">
         {stops.map((station, index) => {
           const stopped = Boolean(station.reason);
+
+          // ค้นหาสีจากเหตุผลที่ถูกเลือก
+          const activeReason = stopReasons.find(
+            (r) => r.name === station.reason,
+          );
+          const reasonColor = activeReason?.color || "var(--danger)";
+
           return (
             <div
               key={station.label}
               className={`stop-card ${stopped ? "stopped" : ""}`}
+              style={
+                stopped
+                  ? {
+                      "--danger": reasonColor, // เพื่อ override ขอบด้านบน (::after) แบบไดนามิก
+                      borderColor: reasonColor,
+                      backgroundColor: `${reasonColor}0C`, // เพิ่มแสงสีจางๆ ให้พื้นหลัง
+                    }
+                  : {}
+              }
             >
               <div className="stop-card-head">
                 <span className="stop-num">
                   <Icon name={station.icon} />
                   {station.label}
                 </span>
-                <span className={`status-dot ${stopped ? "on" : ""}`} />
+                <span
+                  className={`status-dot ${stopped ? "on" : ""}`}
+                  style={
+                    stopped
+                      ? {
+                          background: reasonColor,
+                          boxShadow: `0 0 0 3px ${reasonColor}33`,
+                        }
+                      : {}
+                  }
+                />
               </div>
               <div className="stop-name">{stopped ? "Stopped" : "Running"}</div>
               <div style={{ fontSize: 12, color: "var(--text3)" }}>
                 {station.sub}
               </div>
               {stopped ? (
-                <div className="stop-reason-text">
+                <div
+                  className="stop-reason-text"
+                  style={{ color: reasonColor, fontWeight: 700 }}
+                >
                   <Icon name="ti-alert-circle" />
                   {station.reason}
                 </div>
