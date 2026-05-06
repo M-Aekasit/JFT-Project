@@ -12,18 +12,18 @@ npm run dev
 ## Main Paths
 
 ```text
-/line1/dashboard
-/line2/dashboard
+/ARM1/dashboard
+/ARM2/dashboard
 
-/line1/line-maintenance
-/line1/stop-reason-maintenance
-/line1/line-production-update
-/line1/line-stop-update
+/ARM1/line-maintenance
+/ARM1/stop-reason-maintenance
+/ARM1/line-production-update
+/ARM1/line-stop-update
 
-/line2/line-maintenance
-/line2/stop-reason-maintenance
-/line2/line-production-update
-/line2/line-stop-update
+/ARM2/line-maintenance
+/ARM2/stop-reason-maintenance
+/ARM2/line-production-update
+/ARM2/line-stop-update
 ```
 
 ## Update ล่าสุด
