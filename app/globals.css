@@ -577,9 +577,9 @@ tbody tr:last-child td {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 8px 16px;
+  padding: 16px 16px;
   border-radius: var(--r-sm);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -799,14 +799,14 @@ tbody tr:last-child td {
 .prod-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 24px;
 }
 
 .img-drop {
   border: 2px dashed var(--border2);
   border-radius: var(--r);
   background: var(--surface2);
-  min-height: 300px;
+  min-height: 440px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -829,41 +829,41 @@ tbody tr:last-child td {
 
 .img-drop img {
   width: 100%;
-  height: 300px;
+  height: 440px;
   object-fit: contain;
   display: block;
 }
 
 .img-drop-icon {
-  width: 56px;
-  height: 56px;
+  width: 72px;
+  height: 72px;
   background: var(--surface3);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 32px;
   color: var(--text3);
 }
 
 .img-drop p {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text3);
 }
 
 .img-drop span {
-  font-size: 11.5px;
+  font-size: 14px;
   color: var(--text3);
 }
 
 .upload-strip {
-  margin-top: 10px;
+  margin-top: 14px;
   width: 100%;
-  padding: 10px;
+  padding: 14px;
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  font-size: 13px;
+  font-size: 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -881,18 +881,18 @@ tbody tr:last-child td {
 .info-tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 16px;
+  margin-bottom: 28px;
 }
 
 .info-tile {
   background: var(--surface2);
   border-radius: var(--r-sm);
-  padding: 12px 14px;
+  padding: 20px 24px;
 }
 
 .info-tile .lbl {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text3);
   text-transform: uppercase;
@@ -901,7 +901,7 @@ tbody tr:last-child td {
 }
 
 .info-tile .val {
-  font-size: 13.5px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text);
 }
@@ -909,19 +909,21 @@ tbody tr:last-child td {
 .op-counter {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 12px 0;
+  gap: 14px;
+  margin: 18px 0 24px 0;
+  /* เพิ่มระยะห่างบนล่าง */
   flex-wrap: wrap;
 }
 
 .counter-btn {
-  width: 38px;
-  height: 38px;
+  width: 52px;
+  /* ขยายปุ่มกดให้แตะง่ายขึ้น */
+  height: 52px;
   border: 1.5px solid var(--border2);
   border-radius: var(--r-sm);
   background: var(--surface);
   cursor: pointer;
-  font-size: 20px;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -937,11 +939,13 @@ tbody tr:last-child td {
 }
 
 .counter-input {
-  width: 72px;
-  padding: 9px;
+  width: 90px;
+  /* ขยายช่องกรอกตัวเลข */
+  padding: 12px;
   border: 1.5px solid var(--border2);
   border-radius: var(--r-sm);
-  font-size: 18px;
+  font-size: 28px;
+  /* ขยายตัวเลข */
   font-weight: 800;
   text-align: center;
   color: var(--text);

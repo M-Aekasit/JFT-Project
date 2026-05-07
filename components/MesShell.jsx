@@ -995,7 +995,7 @@ function StopReasonMaintenancePage({
                             gap: 6,
                           }}
                         >
-                          <Icon name="ti-alert-triangle" />
+                          {/* <Icon name="ti-alert-triangle" /> */}
                           {row.name || "—"}
                         </span>
                       </td>
