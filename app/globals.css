@@ -368,7 +368,7 @@ thead th {
   color: var(--text3);
   background: var(--surface2);
   border-bottom: 1px solid var(--border);
-  text-align: left;
+  text-align: center;
 }
 
 tbody tr {
@@ -388,6 +388,7 @@ tbody td {
   padding: 10px 14px;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
+  text-align: center;
 }
 
 tbody tr:last-child td {
