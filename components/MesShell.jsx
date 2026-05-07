@@ -1286,50 +1286,92 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
             <div className="stat-sub">{line.displayName}</div>
           </div>
         </div>
+        {/* กล่อง Production Date */}
         <div className="stat-card purple">
           <div className="stat-icon">
             <Icon name="ti-calendar-event" />
           </div>
-          <div className="stat-label">Production Date</div>
-          <div className="stat-value" style={{ fontSize: 24 }}>
-            {" "}
-            {line.productionDate}
+          <div className="stat-info">
+            <div className="stat-label">Production Date</div>
+
+            {/* จัดกลุ่ม Value และ Badge ให้อยู่ด้วยกัน */}
+            <div
+              className="stat-value"
+              style={{
+                fontSize: 24,
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                flexWrap: "wrap", // ป้องกันการตกบรรทัดแบบเละเทะถ้าจอเล็ก
+              }}
+            >
+              {/* แปลง Format วันที่ให้เป็น 06 May 2026 */}
+              <span>
+                {new Date(line.productionDate).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>
+
+              {/* เปลี่ยน Text ธรรมดาให้เป็นป้าย Badge สีม่วงอ่อน */}
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  fontSize: "13px",
+                  fontWeight: "700",
+                  background: "#f5f3ff", // สีพื้นหลังม่วงอ่อนให้เข้ากับ ธีม purple
+                  color: "var(--accent2)",
+                  padding: "4px 10px",
+                  borderRadius: "99px",
+                  border: "1px solid #ddd6fe",
+                }}
+              >
+                <Icon name="ti-sun" /> {/* ใส่ไอคอนพระอาทิตย์ */}
+                Morning Shift
+              </span>
+            </div>
           </div>
-          <div className="stat-sub">Morning shift</div>
         </div>
 
         <div className="stat-card warn">
           <div className="stat-icon">
             <Icon name="ti-barcode" />
           </div>
-          <div className="stat-label">Current Part Code</div>
-          <div
-            className="stat-value"
-            style={{ fontSize: 22, color: "var(--warn)" }}
-          >
-            {" "}
-            {line.currentPartCode}
+          <div className="stat-info">
+            <div className="stat-label">Current Part Code</div>
+            <div
+              className="stat-value"
+              style={{ fontSize: 22, color: "var(--warn)" }}
+            >
+              {line.currentPartCode}
+            </div>
           </div>
-          <div className="stat-sub">Active part</div>
         </div>
 
         <div className="stat-card success">
           <div className="stat-icon">
             <Icon name="ti-box" />
           </div>
-          <div className="stat-label">Actual / Plan Qty</div>
-          <div className="stat-value">
-            <span style={{ color: "var(--success)" }}>{line.actualQty}</span>
-            <span style={{ fontSize: 20, color: "var(--text3)" }}>
-              {" "}
-              / {line.planQty}
-            </span>
-          </div>
-          <div className="prog-bg">
-            <div className="prog-fill" style={{ width: `${progress}%` }} />
-          </div>
-          <div className="stat-sub" style={{ marginTop: 6 }}>
-            {progress}% complete
+          <div className="stat-info" style={{ flex: 1, width: "100%" }}>
+            <div className="stat-label">Actual / Plan Qty</div>
+            <div
+              className="stat-value"
+              style={{ display: "flex", alignItems: "baseline", gap: "8px" }}
+            >
+              <span style={{ color: "var(--success)" }}>{line.actualQty}</span>
+              <span style={{ fontSize: 16, color: "var(--text3)" }}>
+                / {line.planQty}
+              </span>
+              <div
+                className="prog-bg"
+                style={{ flex: 1, marginLeft: "12px", marginTop: 0 }}
+              >
+                <div className="prog-fill" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1826,7 +1868,15 @@ function LineStopUpdatePage({ line, stopReasons, onUpdateLine }) {
         description={`${line.code} · Tap a reason box to Stop the line. Tap it again to Start.`}
       />
 
-      <div className="stat-row" style={{ flexShrink: 0, marginBottom: "16px" }}>
+      <div
+        className="stat-row"
+        style={{
+          flexShrink: 0,
+          marginBottom: "16px",
+          // เปลี่ยนจาก repeat(3, 1fr) เป็น 1fr 1fr 2fr
+          gridTemplateColumns: "1fr 1fr 2fr",
+        }}
+      >
         {/* กล่องที่ 1: Line Name */}
         <div className="stat-card">
           <div className="stat-icon">
@@ -1856,7 +1906,7 @@ function LineStopUpdatePage({ line, stopReasons, onUpdateLine }) {
           </div>
         </div>
 
-        <div className="stat-card success" style={{ gridColumn: "span 2" }}>
+        <div className="stat-card success">
           <div className="stat-icon">
             <Icon name="ti-box" />
           </div>

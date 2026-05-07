@@ -683,8 +683,15 @@ tbody tr:last-child td {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  gap: 24px;
-  padding: 24px 28px;
+  display: flex !important;
+  /* บังคับเป็น Flexbox */
+  flex-direction: row !important;
+  /* จัดเรียงแนวนอน */
+  align-items: center;
+  /* กึ่งกลางแนวตั้ง */
+  gap: 20px;
+  /* ระยะห่างระหว่างไอคอนกับข้อความ */
+  padding: 24px;
   position: relative;
   overflow: hidden;
   box-shadow: 0 12px 35px rgba(15, 23, 42, .04);
@@ -715,6 +722,7 @@ tbody tr:last-child td {
 .stat-icon {
   width: 52px;
   height: 52px;
+  flex-shrink: 0;
   border-radius: 12px;
   background: var(--accent-bg);
   display: flex;
@@ -730,6 +738,7 @@ tbody tr:last-child td {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  flex: 1;
 }
 
 .stat-card.warn .stat-icon {
@@ -753,7 +762,7 @@ tbody tr:last-child td {
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: .8px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .stat-value {
