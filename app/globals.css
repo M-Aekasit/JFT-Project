@@ -259,6 +259,14 @@ select {
   gap: 16px;
 }
 
+.page-header-left {
+  display: flex;
+  align-items: center;
+  /* จัดให้อยู่กึ่งกลางในแนวตั้ง */
+  gap: 20px;
+  /* ระยะห่างระหว่าง Icon กับ Text */
+}
+
 .page-header-left h1 {
   font-size: 26px;
   font-weight: 800;
@@ -281,7 +289,8 @@ select {
   justify-content: center;
   color: var(--accent);
   font-size: 24px;
-  margin-bottom: 8px;
+  /* margin-bottom: 8px; */
+  margin-bottom: 0 !important;
 }
 
 .path-pill {
@@ -674,6 +683,7 @@ tbody tr:last-child td {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
+  gap: 24px;
   padding: 24px 28px;
   position: relative;
   overflow: hidden;
@@ -712,7 +722,14 @@ tbody tr:last-child td {
   justify-content: center;
   font-size: 26px;
   color: var(--accent);
-  margin-bottom: 16px;
+  /* margin-bottom: 16px; */
+  margin-bottom: 0 !important;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .stat-card.warn .stat-icon {

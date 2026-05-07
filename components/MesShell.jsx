@@ -113,13 +113,10 @@ function PageHeader({ icon, iconStyle, title, description, path, action }) {
         <div className="page-header-icon" style={iconStyle}>
           <Icon name={icon} />
         </div>
-        <h1>{title}</h1>
-        <p>{description}</p>
-        {/* {path ? (
-          <div className="path-pill">
-            <Icon name="ti-route" /> Path: <strong>{path}</strong>
-          </div>
-        ) : null} */}
+        <div>
+          <h1 style={{ margin: 0, lineHeight: 1.2 }}>{title}</h1>
+          <p style={{ margin: 0 }}>{description}</p>
+        </div>
       </div>
       {action}
     </div>
@@ -1280,11 +1277,14 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
           <div className="stat-icon">
             <Icon name="ti-cpu-2" />
           </div>
-          <div className="stat-label">Line Name</div>
-          <div className="stat-value" style={{ color: "var(--accent)" }}>
-            {line.name}
+          <div className="stat-info">
+            {" "}
+            <div className="stat-label">Line Name</div>
+            <div className="stat-value" style={{ color: "var(--accent)" }}>
+              {line.name}
+            </div>
+            <div className="stat-sub">{line.displayName}</div>
           </div>
-          <div className="stat-sub">{line.displayName}</div>
         </div>
         <div className="stat-card purple">
           <div className="stat-icon">
@@ -1827,36 +1827,55 @@ function LineStopUpdatePage({ line, stopReasons, onUpdateLine }) {
       />
 
       <div className="stat-row" style={{ flexShrink: 0, marginBottom: "16px" }}>
+        {/* กล่องที่ 1: Line Name */}
         <div className="stat-card">
-          <div className="stat-label">Line Name</div>
-          <div className="stat-value" style={{ color: "var(--accent)" }}>
-            {line.name}
+          <div className="stat-icon">
+            <Icon name="ti-cpu-2" />
+          </div>
+          <div className="stat-info">
+            <div className="stat-label">Line Name</div>
+            <div className="stat-value" style={{ color: "var(--accent)" }}>
+              {line.name}
+            </div>
+            <div className="stat-sub">{line.displayName}</div>
           </div>
         </div>
+
         <div className="stat-card warn">
-          <div className="stat-label">Current Part Code</div>
-          <div
-            className="stat-value"
-            style={{ fontSize: 18, color: "var(--warn)" }}
-          >
-            {line.currentPartCode}
+          <div className="stat-icon">
+            <Icon name="ti-barcode" />
+          </div>
+          <div className="stat-info">
+            <div className="stat-label">Current Part Code</div>
+            <div
+              className="stat-value"
+              style={{ fontSize: 22, color: "var(--warn)" }}
+            >
+              {line.currentPartCode}
+            </div>
           </div>
         </div>
+
         <div className="stat-card success" style={{ gridColumn: "span 2" }}>
-          <div className="stat-label">Actual / Plan Qty</div>
-          <div
-            className="stat-value"
-            style={{ display: "flex", alignItems: "baseline", gap: "8px" }}
-          >
-            <span style={{ color: "var(--success)" }}>{line.actualQty}</span>
-            <span style={{ fontSize: 16, color: "var(--text3)" }}>
-              / {line.planQty}
-            </span>
+          <div className="stat-icon">
+            <Icon name="ti-box" />
+          </div>
+          <div className="stat-info" style={{ flex: 1, width: "100%" }}>
+            <div className="stat-label">Actual / Plan Qty</div>
             <div
-              className="prog-bg"
-              style={{ flex: 1, marginLeft: "12px", marginTop: 0 }}
+              className="stat-value"
+              style={{ display: "flex", alignItems: "baseline", gap: "8px" }}
             >
-              <div className="prog-fill" style={{ width: `${progress}%` }} />
+              <span style={{ color: "var(--success)" }}>{line.actualQty}</span>
+              <span style={{ fontSize: 16, color: "var(--text3)" }}>
+                / {line.planQty}
+              </span>
+              <div
+                className="prog-bg"
+                style={{ flex: 1, marginLeft: "12px", marginTop: 0 }}
+              >
+                <div className="prog-fill" style={{ width: `${progress}%` }} />
+              </div>
             </div>
           </div>
         </div>
