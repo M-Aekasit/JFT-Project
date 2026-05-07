@@ -1291,11 +1291,13 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
             <Icon name="ti-calendar-event" />
           </div>
           <div className="stat-label">Production Date</div>
-          <div className="stat-value" style={{ fontSize: 17 }}>
+          <div className="stat-value" style={{ fontSize: 24 }}>
+            {" "}
             {line.productionDate}
           </div>
           <div className="stat-sub">Morning shift</div>
         </div>
+
         <div className="stat-card warn">
           <div className="stat-icon">
             <Icon name="ti-barcode" />
@@ -1303,12 +1305,14 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
           <div className="stat-label">Current Part Code</div>
           <div
             className="stat-value"
-            style={{ fontSize: 16, color: "var(--warn)" }}
+            style={{ fontSize: 22, color: "var(--warn)" }}
           >
+            {" "}
             {line.currentPartCode}
           </div>
           <div className="stat-sub">Active part</div>
         </div>
+
         <div className="stat-card success">
           <div className="stat-icon">
             <Icon name="ti-box" />
@@ -1316,7 +1320,7 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
           <div className="stat-label">Actual / Plan Qty</div>
           <div className="stat-value">
             <span style={{ color: "var(--success)" }}>{line.actualQty}</span>
-            <span style={{ fontSize: 15, color: "var(--text3)" }}>
+            <span style={{ fontSize: 20, color: "var(--text3)" }}>
               {" "}
               / {line.planQty}
             </span>
@@ -1498,290 +1502,458 @@ function ProductionUpdatePage({ line, onUpdateLine }) {
   );
 }
 
-function LineStopUpdatePage({ line, stopReasons, stops = [], setStops }) {
-  const [selectedIndex, setSelectedIndex] = useState(null);
-  const [selectedReason, setSelectedReason] = useState("");
+// function LineStopUpdatePage({ line, stopReasons, stops = [], setStops }) {
+//   const [selectedIndex, setSelectedIndex] = useState(null);
+//   const [selectedReason, setSelectedReason] = useState("");
 
-  const activeStopCount = stops.filter((item) => item.reason).length;
+//   const activeStopCount = stops.filter((item) => item.reason).length;
+//   const progress = Math.min(
+//     100,
+//     Math.round((line.actualQty / Math.max(line.planQty, 1)) * 100),
+//   );
+//   const activeReasons = useMemo(
+//     () =>
+//       stopReasons
+//         .filter((item) => item.active)
+//         .map((item) => item.name)
+//         .filter(Boolean),
+//     [stopReasons],
+//   );
+
+//   const openModal = (index) => {
+//     setSelectedIndex(index);
+//     setSelectedReason(stops[index].reason || "");
+//   };
+
+//   const closeModal = () => {
+//     setSelectedIndex(null);
+//     setSelectedReason("");
+//   };
+
+//   const stopStation = () => {
+//     if (selectedIndex === null) return;
+//     if (!selectedReason) {
+//       alert("Please select a stop reason before stopping the line.");
+//       return;
+//     }
+//     setStops((prev) =>
+//       prev.map((item, index) =>
+//         index === selectedIndex ? { ...item, reason: selectedReason } : item,
+//       ),
+//     );
+//     closeModal();
+//   };
+
+//   const startStation = (index) => {
+//     const target = stops[index];
+//     if (!target?.reason) return;
+//     const ok = confirm(`Start ${target.label}?`);
+//     if (!ok) return;
+//     setStops((prev) =>
+//       prev.map((item, rowIndex) =>
+//         rowIndex === index ? { ...item, reason: "" } : item,
+//       ),
+//     );
+//     if (selectedIndex === index) closeModal();
+//   };
+
+//   const selectedStop = selectedIndex === null ? null : stops[selectedIndex];
+//   const selectedStopped = Boolean(selectedStop?.reason);
+
+//   return (
+//     <div className="page">
+//       <PageHeader
+//         icon="ti-player-stop-filled"
+//         iconStyle={{ background: "#fef2f2", color: "var(--danger)" }}
+//         title="Line Stop Update"
+//         description={`${line.code} · Stop a station with reason, then Start again after recovery`}
+//         path={`/${line.slug}/line-stop-update`}
+//       />
+
+//       <div className="stat-row">
+//         <div className="stat-card">
+//           <div className="stat-icon">
+//             <Icon name="ti-cpu-2" />
+//           </div>
+//           <div className="stat-label">Line</div>
+//           <div className="stat-value" style={{ color: "var(--accent)" }}>
+//             {line.name}
+//           </div>
+//         </div>
+//         <div className="stat-card warn">
+//           <div className="stat-icon">
+//             <Icon name="ti-barcode" />
+//           </div>
+//           <div className="stat-label">Part Code</div>
+//           <div
+//             className="stat-value"
+//             style={{ fontSize: 16, color: "var(--warn)" }}
+//           >
+//             {line.currentPartCode}
+//           </div>
+//         </div>
+//         <div className="stat-card success">
+//           <div className="stat-icon">
+//             <Icon name="ti-box" />
+//           </div>
+//           <div className="stat-label">Actual / Plan</div>
+//           <div className="stat-value">
+//             <span style={{ color: "var(--success)" }}>{line.actualQty}</span>
+//             <span style={{ fontSize: 15, color: "var(--text3)" }}>
+//               {" "}
+//               / {line.planQty}
+//             </span>
+//           </div>
+//           <div className="prog-bg">
+//             <div className="prog-fill" style={{ width: `${progress}%` }} />
+//           </div>
+//         </div>
+//         {/* <div className="stat-card">
+//           <div className="stat-icon">
+//             <Icon name="ti-player-stop-filled" />
+//           </div>
+//           <div className="stat-label">Active Stops</div>
+//           <div className="stat-value" style={{ color: "var(--danger)" }}>
+//             {activeStopCount}
+//           </div>
+//           <div className="stat-sub">of {stops.length} stations</div>
+//         </div> */}
+//       </div>
+
+//       <div className="stop-grid">
+//         {stops.map((station, index) => {
+//           const stopped = Boolean(station.reason);
+
+//           // ค้นหาสีจากเหตุผลที่ถูกเลือก
+//           const activeReason = stopReasons.find(
+//             (r) => r.name === station.reason,
+//           );
+//           const reasonColor = activeReason?.color || "var(--danger)";
+
+//           return (
+//             <div
+//               key={station.label}
+//               className={`stop-card ${stopped ? "stopped" : ""}`}
+//               style={
+//                 stopped
+//                   ? {
+//                       "--danger": reasonColor, // เพื่อ override ขอบด้านบน (::after) แบบไดนามิก
+//                       borderColor: reasonColor,
+//                       backgroundColor: `${reasonColor}0C`, // เพิ่มแสงสีจางๆ ให้พื้นหลัง
+//                     }
+//                   : {}
+//               }
+//             >
+//               <div className="stop-card-head">
+//                 <span className="stop-num">
+//                   <Icon name={station.icon} />
+//                   {station.label}
+//                 </span>
+//                 <span
+//                   className={`status-dot ${stopped ? "on" : ""}`}
+//                   style={
+//                     stopped
+//                       ? {
+//                           background: reasonColor,
+//                           boxShadow: `0 0 0 3px ${reasonColor}33`,
+//                         }
+//                       : {}
+//                   }
+//                 />
+//               </div>
+//               <div className="stop-name">{stopped ? "Stopped" : "Running"}</div>
+//               <div style={{ fontSize: 12, color: "var(--text3)" }}>
+//                 {station.sub}
+//               </div>
+//               {stopped ? (
+//                 <div
+//                   className="stop-reason-text"
+//                   style={{ color: reasonColor, fontWeight: 700 }}
+//                 >
+//                   <Icon name="ti-alert-circle" />
+//                   {station.reason}
+//                 </div>
+//               ) : (
+//                 <div className="stop-idle">No active stop event</div>
+//               )}
+//               <div className="stop-card-actions">
+//                 {stopped ? (
+//                   <>
+//                     <button
+//                       className="btn btn-primary btn-sm"
+//                       type="button"
+//                       onClick={() => startStation(index)}
+//                     >
+//                       <Icon name="ti-player-play-filled" /> Start
+//                     </button>
+//                     <button
+//                       className="btn btn-ghost btn-sm"
+//                       type="button"
+//                       onClick={() => openModal(index)}
+//                     >
+//                       <Icon name="ti-pencil" /> Edit Reason
+//                     </button>
+//                   </>
+//                 ) : (
+//                   <button
+//                     className="btn btn-danger btn-sm"
+//                     type="button"
+//                     onClick={() => openModal(index)}
+//                   >
+//                     <Icon name="ti-player-stop-filled" /> Stop
+//                   </button>
+//                 )}
+//               </div>
+//             </div>
+//           );
+//         })}
+//       </div>
+
+//       {selectedStop ? (
+//         <div
+//           className="modal-bg"
+//           onMouseDown={(event) => {
+//             if (event.target === event.currentTarget) closeModal();
+//           }}
+//         >
+//           <div className="modal">
+//             <div className="modal-header">
+//               <div>
+//                 <div className="modal-title">
+//                   {selectedStopped ? "Update Stop Event" : "Record Stop Event"}{" "}
+//                   — {selectedStop.label}
+//                 </div>
+//                 <div className="modal-sub">
+//                   {selectedStop.sub} ·{" "}
+//                   {selectedStopped
+//                     ? "Update reason or Start the station"
+//                     : "Select reason before stopping"}
+//                 </div>
+//               </div>
+//               <button
+//                 className="modal-close"
+//                 type="button"
+//                 onClick={closeModal}
+//               >
+//                 <Icon name="ti-x" />
+//               </button>
+//             </div>
+//             <div className="fg" style={{ marginBottom: 4 }}>
+//               <label>
+//                 <Icon name="ti-alert-triangle" /> Stop Reason
+//               </label>
+//               <select
+//                 value={selectedReason}
+//                 onChange={(event) => setSelectedReason(event.target.value)}
+//               >
+//                 <option value="">— Select stop reason —</option>
+//                 {activeReasons.map((reason) => (
+//                   <option key={reason}>{reason}</option>
+//                 ))}
+//                 <option>Other</option>
+//               </select>
+//             </div>
+//             <div className="modal-actions split-actions">
+//               <div className="row-actions">
+//                 <button
+//                   className="btn btn-primary"
+//                   type="button"
+//                   onClick={stopStation}
+//                 >
+//                   <Icon name="ti-check" />{" "}
+//                   {selectedStopped ? "Update Reason" : "Stop Line"}
+//                 </button>
+//                 <button
+//                   className="btn btn-ghost"
+//                   type="button"
+//                   onClick={closeModal}
+//                 >
+//                   <Icon name="ti-x" />
+//                   Cancel
+//                 </button>
+//               </div>
+//               {selectedStopped ? (
+//                 <button
+//                   className="btn btn-success"
+//                   type="button"
+//                   onClick={() => startStation(selectedIndex)}
+//                 >
+//                   <Icon name="ti-player-play-filled" />
+//                   Start Line
+//                 </button>
+//               ) : null}
+//             </div>
+//           </div>
+//         </div>
+//       ) : null}
+//     </div>
+//   );
+// }
+function LineStopUpdatePage({ line, stopReasons, onUpdateLine }) {
+  const activeReasons = stopReasons.filter((item) => item.active).slice(0, 4);
+  const currentStop = line.currentStopReason || "";
   const progress = Math.min(
     100,
     Math.round((line.actualQty / Math.max(line.planQty, 1)) * 100),
   );
-  const activeReasons = useMemo(
-    () =>
-      stopReasons
-        .filter((item) => item.active)
-        .map((item) => item.name)
-        .filter(Boolean),
-    [stopReasons],
-  );
 
-  const openModal = (index) => {
-    setSelectedIndex(index);
-    setSelectedReason(stops[index].reason || "");
-  };
-
-  const closeModal = () => {
-    setSelectedIndex(null);
-    setSelectedReason("");
-  };
-
-  const stopStation = () => {
-    if (selectedIndex === null) return;
-    if (!selectedReason) {
-      alert("Please select a stop reason before stopping the line.");
+  const handleToggle = (reasonName) => {
+    if (currentStop === reasonName) {
+      // 1. ถ้ากดปุ่มที่เป็นสีอยู่ (กำลัง Stop) -> ให้ปลดล็อคและ Start Line
+      onUpdateLine({ currentStopReason: "" });
+    } else if (currentStop !== "") {
+      // 2. ถ้ามีปุ่มอื่น Stop อยู่แล้ว -> ไม่ทำอะไรทั้งสิ้น (ล็อคปุ่ม)
       return;
+    } else {
+      // 3. ถ้ายังไม่มีอะไร Stop -> ให้บันทึกการ Stop ตามปุ่มที่กด
+      onUpdateLine({ currentStopReason: reasonName });
     }
-    setStops((prev) =>
-      prev.map((item, index) =>
-        index === selectedIndex ? { ...item, reason: selectedReason } : item,
-      ),
-    );
-    closeModal();
   };
-
-  const startStation = (index) => {
-    const target = stops[index];
-    if (!target?.reason) return;
-    const ok = confirm(`Start ${target.label}?`);
-    if (!ok) return;
-    setStops((prev) =>
-      prev.map((item, rowIndex) =>
-        rowIndex === index ? { ...item, reason: "" } : item,
-      ),
-    );
-    if (selectedIndex === index) closeModal();
-  };
-
-  const selectedStop = selectedIndex === null ? null : stops[selectedIndex];
-  const selectedStopped = Boolean(selectedStop?.reason);
 
   return (
-    <div className="page">
+    <div
+      className="page"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "calc(100vh - 120px)",
+      }}
+    >
       <PageHeader
         icon="ti-player-stop-filled"
         iconStyle={{ background: "#fef2f2", color: "var(--danger)" }}
         title="Line Stop Update"
-        description={`${line.code} · Stop a station with reason, then Start again after recovery`}
-        path={`/${line.slug}/line-stop-update`}
+        description={`${line.code} · Tap a reason box to Stop the line. Tap it again to Start.`}
       />
 
-      <div className="stat-row">
+      <div className="stat-row" style={{ flexShrink: 0, marginBottom: "16px" }}>
         <div className="stat-card">
-          <div className="stat-icon">
-            <Icon name="ti-cpu-2" />
-          </div>
-          <div className="stat-label">Line</div>
+          <div className="stat-label">Line Name</div>
           <div className="stat-value" style={{ color: "var(--accent)" }}>
             {line.name}
           </div>
         </div>
         <div className="stat-card warn">
-          <div className="stat-icon">
-            <Icon name="ti-barcode" />
-          </div>
-          <div className="stat-label">Part Code</div>
+          <div className="stat-label">Current Part Code</div>
           <div
             className="stat-value"
-            style={{ fontSize: 16, color: "var(--warn)" }}
+            style={{ fontSize: 18, color: "var(--warn)" }}
           >
             {line.currentPartCode}
           </div>
         </div>
-        <div className="stat-card success">
-          <div className="stat-icon">
-            <Icon name="ti-box" />
-          </div>
-          <div className="stat-label">Actual / Plan</div>
-          <div className="stat-value">
+        <div className="stat-card success" style={{ gridColumn: "span 2" }}>
+          <div className="stat-label">Actual / Plan Qty</div>
+          <div
+            className="stat-value"
+            style={{ display: "flex", alignItems: "baseline", gap: "8px" }}
+          >
             <span style={{ color: "var(--success)" }}>{line.actualQty}</span>
-            <span style={{ fontSize: 15, color: "var(--text3)" }}>
-              {" "}
+            <span style={{ fontSize: 16, color: "var(--text3)" }}>
               / {line.planQty}
             </span>
-          </div>
-          <div className="prog-bg">
-            <div className="prog-fill" style={{ width: `${progress}%` }} />
+            <div
+              className="prog-bg"
+              style={{ flex: 1, marginLeft: "12px", marginTop: 0 }}
+            >
+              <div className="prog-fill" style={{ width: `${progress}%` }} />
+            </div>
           </div>
         </div>
-        {/* <div className="stat-card">
-          <div className="stat-icon">
-            <Icon name="ti-player-stop-filled" />
-          </div>
-          <div className="stat-label">Active Stops</div>
-          <div className="stat-value" style={{ color: "var(--danger)" }}>
-            {activeStopCount}
-          </div>
-          <div className="stat-sub">of {stops.length} stations</div>
-        </div> */}
       </div>
 
-      <div className="stop-grid">
-        {stops.map((station, index) => {
-          const stopped = Boolean(station.reason);
-
-          // ค้นหาสีจากเหตุผลที่ถูกเลือก
-          const activeReason = stopReasons.find(
-            (r) => r.name === station.reason,
-          );
-          const reasonColor = activeReason?.color || "var(--danger)";
+      {/* 2x2 Grid Button Area */}
+      <div
+        style={{
+          flex: 1,
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "16px", // เพิ่มระยะห่างให้ดูเป็นปุ่มแยกกัน
+          background: "var(--surface2)", // เปลี่ยนพื้นหลังให้สีเทาอ่อนเพื่อขับปุ่มให้ลอยขึ้น
+          padding: "16px",
+          borderRadius: "var(--r)",
+        }}
+      >
+        {activeReasons.map((reason) => {
+          const isStopped = currentStop === reason.name;
+          const isDisabled = currentStop !== "" && currentStop !== reason.name; // เช็คสถานะการล็อค
+          const activeColor = reason.color || "var(--danger)";
+          const inactiveColor = "#ffffff"; // สีปุ่มตอนไม่ได้กดเป็นสีขาว
 
           return (
-            <div
-              key={station.label}
-              className={`stop-card ${stopped ? "stopped" : ""}`}
-              style={
-                stopped
-                  ? {
-                      "--danger": reasonColor, // เพื่อ override ขอบด้านบน (::after) แบบไดนามิก
-                      borderColor: reasonColor,
-                      backgroundColor: `${reasonColor}0C`, // เพิ่มแสงสีจางๆ ให้พื้นหลัง
-                    }
-                  : {}
-              }
+            <button
+              key={reason.code}
+              onClick={() => handleToggle(reason.name)}
+              disabled={isDisabled}
+              style={{
+                backgroundColor: isStopped ? activeColor : inactiveColor,
+                color: isStopped ? "#ffffff" : "var(--text)",
+                border: isStopped ? "none" : "2px solid var(--border)",
+                borderRadius: "16px",
+                outline: "none",
+                cursor: isDisabled ? "not-allowed" : "pointer",
+                transition: "all 0.15s ease",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "12px",
+                // ดีไซน์ปุ่ม 3 มิติ: ถ้ายุบ (isStopped) ให้เงาหายและเลื่อนลง ถ้ายก (ปกติ) ให้มีเงาฐาน
+                boxShadow: isStopped
+                  ? `inset 0 4px 8px rgba(0,0,0,0.2)`
+                  : `0 6px 0 var(--border2), 0 10px 20px rgba(0,0,0,0.05)`,
+                transform: isStopped ? "translateY(6px)" : "translateY(0)",
+                // ทำให้ปุ่มที่ถูกล็อคดูจางลง
+                opacity: isDisabled ? 0.4 : 1,
+              }}
             >
-              <div className="stop-card-head">
-                <span className="stop-num">
-                  <Icon name={station.icon} />
-                  {station.label}
-                </span>
-                <span
-                  className={`status-dot ${stopped ? "on" : ""}`}
-                  style={
-                    stopped
-                      ? {
-                          background: reasonColor,
-                          boxShadow: `0 0 0 3px ${reasonColor}33`,
-                        }
-                      : {}
-                  }
+              {/* Icon ขนาดใหญ่กลางปุ่ม */}
+              <div
+                style={{
+                  fontSize: "clamp(42px, 5vw, 64px)",
+                  opacity: isStopped ? 1 : 0.2,
+                  transition: "all 0.2s",
+                }}
+              >
+                <Icon
+                  name={isStopped ? "ti-alert-octagon-filled" : "ti-hand-stop"}
                 />
               </div>
-              <div className="stop-name">{stopped ? "Stopped" : "Running"}</div>
-              <div style={{ fontSize: 12, color: "var(--text3)" }}>
-                {station.sub}
+
+              {/* ชื่อสาเหตุ ตัวใหญ่ชัดเจน */}
+              <div
+                style={{
+                  fontSize: "clamp(24px, 3.5vw, 42px)",
+                  fontWeight: "900",
+                  textAlign: "center",
+                  lineHeight: "1.2",
+                }}
+              >
+                {reason.name}
               </div>
-              {stopped ? (
-                <div
-                  className="stop-reason-text"
-                  style={{ color: reasonColor, fontWeight: 700 }}
-                >
-                  <Icon name="ti-alert-circle" />
-                  {station.reason}
-                </div>
-              ) : (
-                <div className="stop-idle">No active stop event</div>
-              )}
-              <div className="stop-card-actions">
-                {stopped ? (
-                  <>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      type="button"
-                      onClick={() => startStation(index)}
-                    >
-                      <Icon name="ti-player-play-filled" /> Start
-                    </button>
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      type="button"
-                      onClick={() => openModal(index)}
-                    >
-                      <Icon name="ti-pencil" /> Edit Reason
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    className="btn btn-danger btn-sm"
-                    type="button"
-                    onClick={() => openModal(index)}
-                  >
-                    <Icon name="ti-player-stop-filled" /> Stop
-                  </button>
-                )}
+
+              {/* ป้ายกำกับสถานะ (Status Badge) */}
+              <div
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "700",
+                  textTransform: "uppercase",
+                  letterSpacing: "1px",
+                  marginTop: "12px",
+                  background: isStopped
+                    ? "rgba(0,0,0,0.15)"
+                    : "var(--surface3)",
+                  color: isStopped ? "#ffffff" : "var(--text3)",
+                  padding: "6px 16px",
+                  borderRadius: "99px",
+                }}
+              >
+                {isStopped ? "🔴 STOPPED (TAP TO START)" : "PRESS TO STOP"}
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
-
-      {selectedStop ? (
-        <div
-          className="modal-bg"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeModal();
-          }}
-        >
-          <div className="modal">
-            <div className="modal-header">
-              <div>
-                <div className="modal-title">
-                  {selectedStopped ? "Update Stop Event" : "Record Stop Event"}{" "}
-                  — {selectedStop.label}
-                </div>
-                <div className="modal-sub">
-                  {selectedStop.sub} ·{" "}
-                  {selectedStopped
-                    ? "Update reason or Start the station"
-                    : "Select reason before stopping"}
-                </div>
-              </div>
-              <button
-                className="modal-close"
-                type="button"
-                onClick={closeModal}
-              >
-                <Icon name="ti-x" />
-              </button>
-            </div>
-            <div className="fg" style={{ marginBottom: 4 }}>
-              <label>
-                <Icon name="ti-alert-triangle" /> Stop Reason
-              </label>
-              <select
-                value={selectedReason}
-                onChange={(event) => setSelectedReason(event.target.value)}
-              >
-                <option value="">— Select stop reason —</option>
-                {activeReasons.map((reason) => (
-                  <option key={reason}>{reason}</option>
-                ))}
-                <option>Other</option>
-              </select>
-            </div>
-            <div className="modal-actions split-actions">
-              <div className="row-actions">
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  onClick={stopStation}
-                >
-                  <Icon name="ti-check" />{" "}
-                  {selectedStopped ? "Update Reason" : "Stop Line"}
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  type="button"
-                  onClick={closeModal}
-                >
-                  <Icon name="ti-x" />
-                  Cancel
-                </button>
-              </div>
-              {selectedStopped ? (
-                <button
-                  className="btn btn-success"
-                  type="button"
-                  onClick={() => startStation(selectedIndex)}
-                >
-                  <Icon name="ti-player-play-filled" />
-                  Start Line
-                </button>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -1870,8 +2042,9 @@ export default function MesShell({ line, activeSection }) {
           <LineStopUpdatePage
             line={liveLine}
             stopReasons={stopReasons}
-            stops={currentLineStops}
-            setStops={updateCurrentLineStops}
+            // stops={currentLineStops}
+            // setStops={updateCurrentLineStops}
+            onUpdateLine={updateCurrentLine}
           />
         ) : null}
       </main>
