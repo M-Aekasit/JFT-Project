@@ -1095,7 +1095,7 @@ function StopReasonMaintenancePage({
                 <input
                   type="text"
                   value={form.code}
-                  placeholder="e.g. SR001"
+                  placeholder="e.g. ST1"
                   onChange={(e) => setForm({ ...form, code: e.target.value })}
                 />
               </div>
