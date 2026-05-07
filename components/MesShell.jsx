@@ -89,7 +89,8 @@ const emptyLineForm = {
   ip: "",
   plc: "Omron",
   order: "",
-  dashboardSwitchSeconds: String(DEFAULT_DASHBOARD_SWITCH_SECONDS),
+  dashboardSwitchSeconds: "10",
+  imageSwitchSeconds: "10",
   active: false,
 };
 
@@ -263,53 +264,72 @@ function DashboardInfoRow({ label, value, valueClassName = "" }) {
 }
 
 function DashboardPage({ line }) {
-  const [now, setNow] = useState(() => new Date());
+  // 1. แก้ Hydration Error: เริ่มต้นค่าเวลาด้วย null
+  const [now, setNow] = useState(null);
   const [showImage, setShowImage] = useState(false);
 
+  // 2. useEffect สำหรับนาฬิกา: ให้เริ่มทำงานเฉพาะฝั่ง Client
   useEffect(() => {
+    setNow(new Date());
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
+  // 3. useEffect สำหรับการสลับหน้า (Switching Logic): ใช้ setTimeout เพื่อรองรับเวลาที่ไม่เท่ากัน
   useEffect(() => {
+    // ถ้าไม่มีรูปภาพที่อัปโหลดไว้ ให้แสดงหน้า Dashboard ตลอด (ไม่สลับ)
     if (!line.partImageSrc) {
       setShowImage(false);
-      return undefined;
+      return;
     }
 
-    const seconds = Math.max(
-      1,
-      Number(line.dashboardSwitchSeconds) || DEFAULT_DASHBOARD_SWITCH_SECONDS,
+    // กำหนดเวลา: ถ้ากำลังโชว์รูปใช้ imageSwitchSeconds ถ้าโชว์ข้อมูลใช้ dashboardSwitchSeconds
+    const currentTimeoutSeconds = showImage
+      ? Number(line.imageSwitchSeconds) || 10
+      : Number(line.dashboardSwitchSeconds) || 10;
+
+    // ใช้ setTimeout เพื่อให้คำนวณวินาทีใหม่ทุกครั้งที่มีการเปลี่ยนสถานะ showImage
+    const timer = setTimeout(
+      () => {
+        setShowImage((prev) => !prev);
+      },
+      Math.max(1, currentTimeoutSeconds) * 1000,
     );
-    const timer = setInterval(() => {
-      setShowImage((value) => !value);
-    }, seconds * 1000);
 
-    return () => clearInterval(timer);
-  }, [line.dashboardSwitchSeconds, line.partImageSrc]);
+    return () => clearTimeout(timer);
+  }, [
+    showImage,
+    line.partImageSrc,
+    line.dashboardSwitchSeconds,
+    line.imageSwitchSeconds,
+  ]);
 
+  // คำนวณอัตราส่วนการผลิต
   const planRate = Math.round(
     (line.actualQty / Math.max(line.planQty, 1)) * 100,
   );
   const productiveRate = Math.round(
     (line.productiveActual / Math.max(line.productiveTarget, 1)) * 100,
   );
-  const switchSeconds = Math.max(
-    1,
-    Number(line.dashboardSwitchSeconds) || DEFAULT_DASHBOARD_SWITCH_SECONDS,
-  );
 
+  // --- ส่วนการแสดงผล (Render) ---
+
+  // กรณีแสดงหน้ารูปภาพ (Image Page)
   if (showImage && line.partImageSrc) {
     return (
       <div className="dashboard-page dashboard-image-page">
         <div className="dashboard-image-topline">
           <div>
             <h1>{line.dashboardTitle}</h1>
-            {/* <p>{line.displayName} · Part Reference Image · Auto switch every {switchSeconds} sec.</p> */}
           </div>
           <div className="dashboard-clock">
-            <div>{formatDashboardDate(now)}</div>
-            <div>{now.toLocaleTimeString("en-GB", { hour12: false })}</div>
+            {/* แสดงผลเวลาเมื่อมีค่า now แล้วเท่านั้นเพื่อป้องกัน Error */}
+            <div>{now ? formatDashboardDate(now) : ""}</div>
+            <div style={{ fontWeight: 900 }}>
+              {now
+                ? now.toLocaleTimeString("en-GB", { hour12: false })
+                : "--:--:--"}
+            </div>
           </div>
         </div>
         <div className="dashboard-image-stage">
@@ -319,17 +339,21 @@ function DashboardPage({ line }) {
     );
   }
 
+  // กรณีแสดงหน้าข้อมูล (Production Dashboard)
   return (
     <div className="dashboard-page">
       <div className="dashboard-screen">
         <div className="dashboard-topline">
           <div>
             <h1>{line.dashboardTitle}</h1>
-            {/* <p>{line.displayName} · Path /{line.slug}/dashboard</p> */}
           </div>
           <div className="dashboard-clock">
-            <div>{formatDashboardDate(now)}</div>
-            <div>{now.toLocaleTimeString("en-GB", { hour12: false })}</div>
+            <div>{now ? formatDashboardDate(now) : ""}</div>
+            <div style={{ fontWeight: 900 }}>
+              {now
+                ? now.toLocaleTimeString("en-GB", { hour12: false })
+                : "--:--:--"}
+            </div>
           </div>
         </div>
 
@@ -337,7 +361,10 @@ function DashboardPage({ line }) {
           <div className="dashboard-left-grid">
             <div className="dashboard-product-row">
               <div className="dashboard-product-label">Product Code</div>
-              <div className="dashboard-product-value">
+              <div
+                className="dashboard-product-value"
+                style={{ color: "#00FFFF" }}
+              >
                 {line.productCode || line.currentPartCode}
               </div>
             </div>
@@ -416,9 +443,8 @@ function LineMaintenancePage({ line, onUpdateLine }) {
       ip: item.ipAddress,
       plc: item.plcBrand,
       order: String(item.displayOrder),
-      dashboardSwitchSeconds: String(
-        item.dashboardSwitchSeconds || DEFAULT_DASHBOARD_SWITCH_SECONDS,
-      ),
+      dashboardSwitchSeconds: String(item.dashboardSwitchSeconds || 10),
+      imageSwitchSeconds: String(item.imageSwitchSeconds || 10),
       active: item.isActive,
     })),
   );
@@ -432,14 +458,13 @@ function LineMaintenancePage({ line, onUpdateLine }) {
         item.code === line.code
           ? {
               ...item,
-              dashboardSwitchSeconds: String(
-                line.dashboardSwitchSeconds || DEFAULT_DASHBOARD_SWITCH_SECONDS,
-              ),
+              dashboardSwitchSeconds: String(line.dashboardSwitchSeconds || 10),
+              imageSwitchSeconds: String(line.imageSwitchSeconds || 10),
             }
           : item,
       ),
     );
-  }, [line.code, line.dashboardSwitchSeconds]);
+  }, [line.code, line.dashboardSwitchSeconds, line.imageSwitchSeconds]);
 
   const openAddForm = () => {
     setEditIndex(-1);
@@ -470,17 +495,25 @@ function LineMaintenancePage({ line, onUpdateLine }) {
       1,
       Number(form.dashboardSwitchSeconds) || DEFAULT_DASHBOARD_SWITCH_SECONDS,
     );
+
+    const dashSeconds = Math.max(1, Number(form.dashboardSwitchSeconds) || 10);
+    const imgSeconds = Math.max(1, Number(form.imageSwitchSeconds) || 10);
+
     const nextRow = {
       ...form,
       code,
       name: form.name.trim(),
       ip: form.ip.trim(),
       order: String(form.order).trim(),
-      dashboardSwitchSeconds: String(switchSeconds),
+      dashboardSwitchSeconds: String(dashSeconds),
+      imageSwitchSeconds: String(imgSeconds),
     };
 
     if (nextRow.code === line.code) {
-      onUpdateLine({ dashboardSwitchSeconds: switchSeconds });
+      onUpdateLine({
+        dashboardSwitchSeconds: dashSeconds,
+        imageSwitchSeconds: imgSeconds,
+      });
     }
 
     setLineRows((prev) => {
@@ -554,7 +587,10 @@ function LineMaintenancePage({ line, onUpdateLine }) {
                   <Icon name="ti-sort-ascending" /> Order
                 </th>
                 <th>
-                  <Icon name="ti-clock" /> Switch Sec.
+                  <Icon name="ti-clock" /> Dashboard Sec.
+                </th>
+                <th>
+                  <Icon name="ti-photo" /> Image Sec.
                 </th>
                 <th>
                   <Icon name="ti-activity" /> Status
@@ -585,6 +621,7 @@ function LineMaintenancePage({ line, onUpdateLine }) {
                         style={{
                           display: "flex",
                           alignItems: "center",
+                          justifyContent: "center",
                           gap: 6,
                         }}
                       >
@@ -600,6 +637,7 @@ function LineMaintenancePage({ line, onUpdateLine }) {
                         style={{
                           display: "flex",
                           alignItems: "center",
+                          justifyContent: "center",
                           gap: 6,
                         }}
                       >
@@ -611,8 +649,8 @@ function LineMaintenancePage({ line, onUpdateLine }) {
                     <td>
                       {row.dashboardSwitchSeconds ||
                         DEFAULT_DASHBOARD_SWITCH_SECONDS}{" "}
-                      sec.
                     </td>
+                    <td>{row.imageSwitchSeconds || 10}</td>
                     <td>
                       <StatusBadge active={row.active} />
                     </td>
@@ -720,12 +758,12 @@ function LineMaintenancePage({ line, onUpdateLine }) {
                   type="number"
                   min="1"
                   value={form.dashboardSwitchSeconds}
-                  placeholder="10"
                   onChange={(e) =>
                     setForm({ ...form, dashboardSwitchSeconds: e.target.value })
                   }
                 />
               </div>
+
               <div className="fg">
                 <label>Active Status</label>
                 <div className="toggle-row">
@@ -743,6 +781,18 @@ function LineMaintenancePage({ line, onUpdateLine }) {
                     {form.active ? "Active" : "Inactive"}
                   </span>
                 </div>
+              </div>
+
+              <div className="fg">
+                <label>Image Switch Time (sec.)</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={form.imageSwitchSeconds}
+                  onChange={(e) =>
+                    setForm({ ...form, imageSwitchSeconds: e.target.value })
+                  }
+                />
               </div>
             </div>
 
@@ -852,6 +902,7 @@ function StopReasonMaintenancePage({
       }
       return [...prev, nextRow];
     });
+
     closeForm();
   };
 
@@ -943,6 +994,7 @@ function StopReasonMaintenancePage({
                           style={{
                             display: "flex",
                             alignItems: "center",
+                            justifyContent: "center",
                             gap: 6,
                           }}
                         >
@@ -955,6 +1007,7 @@ function StopReasonMaintenancePage({
                           style={{
                             display: "flex",
                             alignItems: "center",
+                            justifyContent: "center",
                             gap: "8px",
                           }}
                         >
